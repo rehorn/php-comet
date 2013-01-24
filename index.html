@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <h1>Comet LongPoll 示例</h1>
+    <h2>Start Polling....</h2>
+    <div id="msg"></div>     
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        var counter = 0;
+        function pollMsg(){
+            counter++;
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "poll.php",
+                timeout: (60 * 1000),
+                success: function(data, textStatus) {
+                    //服务器有消息返回
+                    if (data.code == "0") {
+                        $("#msg").append("<br>[Poll有数据]" + data.data);
+                    }
+                    //一次longpoll结束，服务器查无新数据     
+                    if (data.code == "1") {
+                        $("#msg").append("<br>[Poll无数据]");
+                    }
+                    pollMsg();
+                },
+                //Ajax请求超时，继续查询
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    if (textStatus == "timeout") {
+                        $("#msg").append("<br>[超时]");
+                    }
+                    pollMsg();
+                }
+            });
+        };
+
+        // domReady to poll
+        $(function() {
+            pollMsg();
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+A comet logpoll demo in php
